@@ -137,6 +137,7 @@
 		"type": "function"
 	}
 ];
+
         const web3 = new Web3(Web3.givenProvider);
         const contrato = new web3.eth.Contract(contratoABI, contratoAddress);
 
@@ -150,6 +151,7 @@
 
         async function verificarDado() {
             const senha = document.getElementById("senhaVerificar").value;
+            const contas = await web3.eth.getAccounts(); // Definindo contas aqui
             await contrato.methods.acessarDadoComSenha(senha).send({ from: contas[0], value: web3.utils.toWei('0.0001', 'ether') });
             const dado = await contrato.methods.acessarDadoComSenha(senha).call();
             document.getElementById("dadosExibidos").innerText = "Dado verificado: " + dado;
