@@ -1,35 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface de Armazenamento de Dados</title>
+    <title>Data Storage Interface</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.3/web3.min.js"></script>
     <script>
-        window.onload = async function() {
-            // Verifica se o MetaMask está instalado
-            if (window.ethereum) {
-                try {
-                    // Solicita ao usuário permissão para acessar a conta
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    // Conta do usuário
-                    const userAccount = accounts[0];
-                    // Verifica se web3.eth está definido
-                    if (typeof web3 !== 'undefined' && typeof web3.eth !== 'undefined') {
-                        // Define a conta padrão para transações
-                        web3.eth.defaultAccount = userAccount;
-                    } else {
-                        console.error('web3.eth não está definido. Certifique-se de que o MetaMask está conectado corretamente.');
-                    }
-                } catch (error) {
-                    // Manipular erros aqui
-                    console.error(error);
-                }
-            } else {
-                // MetaMask não está instalado, exibe uma mensagem de erro ou instruções para o usuário
-                console.error('MetaMask não está instalado.');
-            }
-        }
+        // Inicializa a conexão com a blockchain
+        var web3 = new Web3(Web3.givenProvider);
 
         // Defina o endereço e o ABI do contrato
         var contractAddress = '0x0C534b813bbE07BE1b4C30011dee868bEF2c55d9';
@@ -97,8 +75,8 @@
 
         // Função para adicionar dados
         function addData() {
-            var key = document.getElementById("addKey").value;
-            var value = document.getElementById("addValue").value;
+            var key = document.getElementById("key").value;
+            var value = document.getElementById("value").value;
 
             contract.methods.addData(key, value).send({from: web3.eth.defaultAccount})
             .then(function(receipt){
@@ -108,7 +86,7 @@
 
         // Função para recuperar dados
         function getData() {
-            var key = document.getElementById("getKey").value;
+            var key = document.getElementById("key").value;
 
             contract.methods.getData(key).call()
             .then(function(result){
@@ -118,20 +96,13 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <h2>Interface de Armazenamento de Dados</h2>
-        <h3>Adicionar Dados</h3>
-        <label for="addKey">Chave:</label>
-        <input type="text" id="addKey"><br><br>
-        <label for="addValue">Valor:</label>
-        <input type="text" id="addValue"><br><br>
-        <button onclick="addData()">Adicionar Dados</button><br><br>
-
-        <h3>Acessar Dados</h3>
-        <label for="getKey">Digite a Chave:</label>
-        <input type="text" id="getKey"><br><br>
-        <button onclick="getData()">Obter Dados</button><br><br>
-        <div id="display"></div>
-    </div>
+    <h2>Data Storage Interface</h2>
+    <label for="key">Key:</label>
+    <input type="text" id="key"><br><br>
+    <label for="value">Value:</label>
+    <input type="text" id="value"><br><br>
+    <button onclick="addData()">Add Data</button>
+    <button onclick="getData()">Get Data</button><br><br>
+    <div id="display"></div>
 </body>
 </html>
