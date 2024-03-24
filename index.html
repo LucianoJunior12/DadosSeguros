@@ -1,136 +1,68 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Armazenamento Seguro de Dados</title>
-</head>
-<body>
-    <h1>Armazenamento Seguro de Dados</h1>
-    
-    <label for="dado">Dado:</label>
-    <input type="text" id="dado">
-    
-    <label for="senhaEnviar">Senha:</label>
-    <input type="password" id="senhaEnviar">
-    
-    <button onclick="enviarDado()">Enviar Dado e Senha</button>
-    
-    <hr>
-    
-    <label for="senhaVerificar">Senha:</label>
-    <input type="password" id="senhaVerificar">
-    
-    <button onclick="verificarDado()">Verificar Dado</button>
-
-    <div id="dadosExibidos"></div>
-
-    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <title>Data Storage Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.3/web3.min.js"></script>
     <script>
-        const contratoAddress = '0x85Ed6f7436f2362CcCC32Bf7Dc6BdaA57336aC08';
-        const contratoABI = [
+        // Inicializa a conexão com a blockchain
+        var web3 = new Web3(Web3.givenProvider);
+
+        // Defina o endereço e o ABI do contrato
+        var contractAddress = '0x0C534b813bbE07BE1b4C30011dee868bEF2c55d9';
+        var contractABI = [
 	{
 		"inputs": [
 			{
 				"internalType": "string",
-				"name": "senha",
-				"type": "string"
-			}
-		],
-		"name": "acessarDadoComSenha",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "dado",
+				"name": "key",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "senha",
+				"name": "value",
 				"type": "string"
 			}
 		],
-		"name": "enviarDado",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "sacarTaxa",
+		"name": "addData",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
 	},
 	{
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "usuario",
-				"type": "address"
+				"indexed": false,
+				"internalType": "string",
+				"name": "key",
+				"type": "string"
 			},
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "dado",
+				"name": "value",
 				"type": "string"
 			}
 		],
-		"name": "DadoEnviado",
+		"name": "DataAdded",
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
+				"internalType": "string",
+				"name": "key",
+				"type": "string"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "taxaAcesso",
+		"name": "getData",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "string",
 				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalTaxa",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -138,24 +70,39 @@
 	}
 ];
 
-        const web3 = new Web3(Web3.givenProvider);
-        const contrato = new web3.eth.Contract(contratoABI, contratoAddress);
+        // Instancie o contrato
+        var contract = new web3.eth.Contract(contractABI, contractAddress);
 
-        async function enviarDado() {
-            const dado = document.getElementById("dado").value;
-            const senha = document.getElementById("senhaEnviar").value;
-            const contas = await web3.eth.getAccounts();
-            await contrato.methods.enviarDado(dado, senha).send({ from: contas[0], value: web3.utils.toWei('0.01', 'ether') });
-            alert("Dado e senha enviados com sucesso!");
+        // Função para adicionar dados
+        function addData() {
+            var key = document.getElementById("key").value;
+            var value = document.getElementById("value").value;
+
+            contract.methods.addData(key, value).send({from: web3.eth.defaultAccount})
+            .then(function(receipt){
+                console.log(receipt);
+            });
         }
 
-        async function verificarDado() {
-            const senha = document.getElementById("senhaVerificar").value;
-            const contas = await web3.eth.getAccounts(); // Definindo contas aqui
-            await contrato.methods.acessarDadoComSenha(senha).send({ from: contas[0], value: web3.utils.toWei('0.0001', 'ether') });
-            const dado = await contrato.methods.acessarDadoComSenha(senha).call();
-            document.getElementById("dadosExibidos").innerText = "Dado verificado: " + dado;
+        // Função para recuperar dados
+        function getData() {
+            var key = document.getElementById("key").value;
+
+            contract.methods.getData(key).call()
+            .then(function(result){
+                document.getElementById("display").innerHTML = result;
+            });
         }
     </script>
+</head>
+<body>
+    <h2>Data Storage Interface</h2>
+    <label for="key">Key:</label>
+    <input type="text" id="key"><br><br>
+    <label for="value">Value:</label>
+    <input type="text" id="value"><br><br>
+    <button onclick="addData()">Add Data</button>
+    <button onclick="getData()">Get Data</button><br><br>
+    <div id="display"></div>
 </body>
 </html>
