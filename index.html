@@ -75,22 +75,23 @@
 </style>
 </head>
 <body>
-  <h1>Interagindo com Contrato Inteligente</h1>
+    <div class="container">
+        <h1>Interagindo com Contrato Inteligente</h1>
 
-  <!-- Formulário para adicionar senha e dado -->
-  <h2>Adicionar Senha e Dado</h2>
-  <input type="text" id="addKey" placeholder="Digite a senha">
-  <input type="text" id="addValue" placeholder="Digite o dado associado">
-  <button onclick="addData()">Adicionar</button>
+        <!-- Formulário para adicionar senha e dado -->
+        <h2>Adicionar Senha e Dado</h2>
+        <input type="text" id="addKey" placeholder="Digite a senha">
+        <input type="text" id="addValue" placeholder="Digite o dado associado">
+        <button onclick="addData()">Adicionar</button>
 
-  <!-- Formulário para buscar dado por senha -->
-  <h2>Buscar Dado por Senha</h2>
-  <input type="text" id="getKey" placeholder="Digite a senha">
-  <button onclick="getData()">Buscar</button>
+        <!-- Formulário para buscar dado por senha -->
+        <h2>Buscar Dado por Senha</h2>
+        <input type="text" id="getKey" placeholder="Digite a senha">
+        <button onclick="getData()">Buscar</button>
 
-  <!-- Espaço para exibir resultados -->
-  <div id="result"></div>
-
+        <!-- Espaço para exibir resultados -->
+        <div id="result"></div>
+    </div>
   <!-- Script para interagir com o contrato inteligente -->
   <script>
     // Verifica se o MetaMask está instalado
