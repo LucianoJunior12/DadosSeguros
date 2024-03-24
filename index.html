@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Armazenamento Seguro de Dados</title>
+    <style>
+        #dadoExibido {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-height: 200px; /* Altura máxima da área de exibição */
+            overflow-y: auto; /* Adiciona barra de rolagem vertical se o conteúdo ultrapassar a altura máxima */
+        }
+    </style>
 </head>
 <body>
     <h1>Armazenamento Seguro de Dados</h1>
@@ -23,9 +34,11 @@
     
     <button onclick="verificarDado()">Verificar Dado</button>
 
+    <div id="dadoExibido"></div> <!-- Área para exibir o dado verificado -->
+
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
     <script>
-        const contratoAddress = '0xE53650C8b991CAaC6bacF3297275ca863859094a';
+        const contratoAddress = '0x448f2A3888e58b3A36079213294A71b73A4e138E';
         const contratoABI = [
 	{
 		"inputs": [],
@@ -74,30 +87,6 @@
 		"name": "sacarTaxa",
 		"outputs": [],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "dadosPorUsuario",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "dado",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "senha",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -164,8 +153,15 @@
             if (dadoVerificado === '') {
                 alert("Senha incorreta ou dado não encontrado.");
             } else {
-                alert("Dado verificado: " + dadoVerificado);
+                exibirDadoVerificado(dadoVerificado);
             }
+        }
+
+        // Função para exibir o dado verificado na área correspondente
+        function exibirDadoVerificado(dado) {
+            const dadoExibido = document.getElementById("dadoExibido");
+            dadoExibido.textContent = "Dado verificado: " + dado;
+            dadoExibido.style.display = "block"; // Exibe a área de exibição do dado
         }
 
         window.addEventListener('load', async () => {
