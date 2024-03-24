@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armazenamento Seguro de Dados</title>
+</head>
+<body>
+    <h1>Armazenamento Seguro de Dados</h1>
+    
+    <label for="dado">Dado:</label>
+    <input type="text" id="dado">
+    
+    <label for="senhaEnviar">Senha:</label>
+    <input type="password" id="senhaEnviar">
+    
+    <button onclick="enviarDado()">Enviar Dado e Senha</button>
+    
+    <hr>
+    
+    <label for="senhaVerificar">Senha:</label>
+    <input type="password" id="senhaVerificar">
+    
+    <button onclick="verificarDado()">Verificar Dado</button>
+
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <script>
+        const contratoAddress = '0x0a900c283688EfEc9FeAAB580801a38c2AB945D7';
+        const contratoABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "remetente",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "dado",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "senha",
+				"type": "string"
+			}
+		],
+		"name": "DadoEnviado",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "dado",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "senha",
+				"type": "string"
+			}
+		],
+		"name": "enviarDado",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "senha",
+				"type": "string"
+			}
+		],
+		"name": "verificarDado",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+        const web3 = new Web3(Web3.givenProvider);
+        const contrato = new web3.eth.Contract(contratoABI, contratoAddress);
+
+        async function enviarDado() {
+            const dado = document.getElementById("dado").value;
+            const senha = document.getElementById("senhaEnviar").value;
+            const contas = await web3.eth.getAccounts();
+            await contrato.methods.enviarDado(dado, senha).send({ from: contas[0], value: web3.utils.toWei('0.01', 'ether') });
+            alert("Dado e senha enviados com sucesso!");
+        }
+
+        async function verificarDado() {
+            const senha = document.getElementById("senhaVerificar").value;
+            const dadoVerificado = await contrato.methods.verificarDado(senha).call();
+            alert("Dado verificado: " + dadoVerificado);
+        }
+    </script>
+</body>
+</html>
