@@ -1,33 +1,43 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface de Armazenamento de Dados</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.3/web3.min.js"></script>
-    <script>
-        window.onload = async function() {
-            // Função para conectar a carteira
-            async function connectWallet() {
-                if (window.ethereum) {
-                    try {
-                        // Solicitar ao usuário permissão para acessar a conta
-                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                        const userAccount = accounts[0];
-                        web3.eth.defaultAccount = userAccount;
-                        alert('Conectado à carteira MetaMask com sucesso!');
-                    } catch (error) {
-                        console.error(error);
-                        alert('Falha ao conectar à carteira MetaMask. Verifique se ela está instalada e conectada.');
-                    }
-                } else {
-                    alert('A carteira MetaMask não está instalada. Por favor, instale e tente novamente.');
-                }
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interagindo com Contrato Inteligente</title>
+  <!-- Importando Web3.js -->
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+</head>
+<body>
+  <h1>Interagindo com Contrato Inteligente</h1>
 
-            // Defina o endereço e o ABI do contrato
-            var contractAddress = '0x0C534b813bbE07BE1b4C30011dee868bEF2c55d9';
-            var contractABI = [
+  <!-- Formulário para adicionar senha e dado -->
+  <h2>Adicionar Senha e Dado</h2>
+  <input type="text" id="addKey" placeholder="Digite a senha">
+  <input type="text" id="addValue" placeholder="Digite o dado associado">
+  <button onclick="addData()">Adicionar</button>
+
+  <!-- Formulário para buscar dado por senha -->
+  <h2>Buscar Dado por Senha</h2>
+  <input type="text" id="getKey" placeholder="Digite a senha">
+  <button onclick="getData()">Buscar</button>
+
+  <!-- Espaço para exibir resultados -->
+  <div id="result"></div>
+
+  <!-- Script para interagir com o contrato inteligente -->
+  <script>
+    // Verifica se o MetaMask está instalado
+    if (typeof window.ethereum !== 'undefined') {
+      // Conecta ao MetaMask
+      ethereum.request({ method: 'eth_requestAccounts' });
+    } else {
+      alert('Por favor, instale o MetaMask para interagir com este site.');
+    }
+
+    // Endereço do contrato inteligente
+    const contractAddress = '0x0C534b813bbE07BE1b4C30011dee868bEF2c55d9';
+    // ABI do contrato inteligente
+    const contractABI = [
 	{
 		"inputs": [
 			{
@@ -84,58 +94,34 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
+]; // Sua ABI aqui
 
-            // Instancie o contrato
-            var contract = new web3.eth.Contract(contractABI, contractAddress);
+    // Inicializa o contrato inteligente
+    const web3 = new Web3(window.ethereum);
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
 
-            // Função para adicionar dados
-            function addData() {
-                var key = document.getElementById("addKey").value;
-                var value = document.getElementById("addValue").value;
+    // Função para adicionar dados ao contrato inteligente
+    async function addData() {
+      const key = document.getElementById('addKey').value;
+      const value = document.getElementById('addValue').value;
 
-                contract.methods.addData(key, value).send({from: web3.eth.defaultAccount})
-                .then(function(receipt){
-                    console.log(receipt);
-                })
-                .catch(function(error){
-                    console.error(error);
-                });
-            }
+      // Chamada à função addData do contrato inteligente
+      await contract.methods.addData(key, value).send({ from: ethereum.selectedAddress });
 
-            // Função para recuperar dados
-            function getData() {
-                var key = document.getElementById("getKey").value;
+      // Exibe mensagem de sucesso
+      document.getElementById('result').innerText = 'Dados adicionados com sucesso!';
+    }
 
-                contract.methods.getData(key).call()
-                .then(function(result){
-                    document.getElementById("display").innerHTML = result;
-                })
-                .catch(function(error){
-                    console.error(error);
-                });
-            }
-        }
-    </script>
-</head>
-<body>
-    <div class="container">
-        <h2>Interface de Armazenamento de Dados</h2>
-        <!-- Botão para conectar a carteira -->
-        <button onclick="connectWallet()">Conectar Carteira MetaMask</button><br><br>
-        
-        <h3>Adicionar Dados</h3>
-        <label for="addKey">Chave:</label>
-        <input type="text" id="addKey"><br><br>
-        <label for="addValue">Valor:</label>
-        <input type="text" id="addValue"><br><br>
-        <button onclick="addData()">Adicionar Dados</button><br><br>
+    // Função para buscar dados do contrato inteligente
+    async function getData() {
+      const key = document.getElementById('getKey').value;
 
-        <h3>Acessar Dados</h3>
-        <label for="getKey">Digite a Chave:</label>
-        <input type="text" id="getKey"><br><br>
-        <button onclick="getData()">Obter Dados</button><br><br>
-        <div id="display"></div>
-    </div>
+      // Chamada à função getData do contrato inteligente
+      const result = await contract.methods.getData(key).call();
+
+      // Exibe o dado associado à senha
+      document.getElementById('result').innerText = 'Dado associado à senha: ' + result;
+    }
+  </script>
 </body>
 </html>
