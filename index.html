@@ -4,20 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Armazenamento Seguro de Dados</title>
-    <style>
-        #dadoExibido {
-            display: none;
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            max-height: 200px; /* Altura máxima da área de exibição */
-            overflow-y: auto; /* Adiciona barra de rolagem vertical se o conteúdo ultrapassar a altura máxima */
-        }
-    </style>
 </head>
 <body>
-    <h1>Armazenamento Seguro de Dados - deu certo</h1>
+    <h1>Armazenamento Seguro de Dados</h1>
     
     <label for="dado">Dado:</label>
     <input type="text" id="dado">
@@ -34,35 +23,30 @@
     
     <button onclick="verificarDado()">Verificar Dado</button>
 
-    <div id="dadoExibido"></div> <!-- Área para exibir o dado verificado -->
+    <div id="dadosExibidos"></div>
 
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
     <script>
-        const contratoAddress = '0x448f2A3888e58b3A36079213294A71b73A4e138E';
+        const contratoAddress = '0x85Ed6f7436f2362CcCC32Bf7Dc6BdaA57336aC08';
         const contratoABI = [
 	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "usuario",
-				"type": "address"
-			},
-			{
-				"indexed": false,
 				"internalType": "string",
-				"name": "dado",
+				"name": "senha",
 				"type": "string"
 			}
 		],
-		"name": "DadoEnviado",
-		"type": "event"
+		"name": "acessarDadoComSenha",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -91,12 +75,49 @@
 	},
 	{
 		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "usuario",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "dado",
+				"type": "string"
+			}
+		],
+		"name": "DadoEnviado",
+		"type": "event"
+	},
+	{
+		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "taxaAcesso",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -114,30 +135,10 @@
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "senha",
-				"type": "string"
-			}
-		],
-		"name": "verificarDado",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	}
 ];
-
         const web3 = new Web3(Web3.givenProvider);
-        let contrato;
+        const contrato = new web3.eth.Contract(contratoABI, contratoAddress);
 
         async function enviarDado() {
             const dado = document.getElementById("dado").value;
@@ -149,24 +150,10 @@
 
         async function verificarDado() {
             const senha = document.getElementById("senhaVerificar").value;
-            const dadoVerificado = await contrato.methods.verificarDado(senha).call();
-            if (dadoVerificado === '') {
-                alert("Senha incorreta ou dado não encontrado.");
-            } else {
-                exibirDadoVerificado(dadoVerificado);
-            }
+            await contrato.methods.acessarDadoComSenha(senha).send({ from: contas[0], value: web3.utils.toWei('0.0001', 'ether') });
+            const dado = await contrato.methods.acessarDadoComSenha(senha).call();
+            document.getElementById("dadosExibidos").innerText = "Dado verificado: " + dado;
         }
-
-        // Função para exibir o dado verificado na área correspondente
-        function exibirDadoVerificado(dado) {
-            const dadoExibido = document.getElementById("dadoExibido");
-            dadoExibido.textContent = "Dado verificado: " + dado;
-            dadoExibido.style.display = "block"; // Exibe a área de exibição do dado
-        }
-
-        window.addEventListener('load', async () => {
-            contrato = new web3.eth.Contract(contratoABI, contratoAddress);
-        });
     </script>
 </body>
 </html>
