@@ -14,8 +14,13 @@
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     // Conta do usuário
                     const userAccount = accounts[0];
-                    // Define a conta padrão para transações
-                    web3.eth.defaultAccount = userAccount;
+                    // Verifica se web3.eth está definido
+                    if (typeof web3 !== 'undefined' && typeof web3.eth !== 'undefined') {
+                        // Define a conta padrão para transações
+                        web3.eth.defaultAccount = userAccount;
+                    } else {
+                        console.error('web3.eth não está definido. Certifique-se de que o MetaMask está conectado corretamente.');
+                    }
                 } catch (error) {
                     // Manipular erros aqui
                     console.error(error);
