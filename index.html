@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Storage Interface</title>
+    <title>Interface de Armazenamento de Dados</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.3/web3.min.js"></script>
+    </script>
     <script>
         // Inicializa a conexão com a blockchain
         var web3 = new Web3(Web3.givenProvider);
@@ -75,8 +77,8 @@
 
         // Função para adicionar dados
         function addData() {
-            var key = document.getElementById("key").value;
-            var value = document.getElementById("value").value;
+            var key = document.getElementById("addKey").value;
+            var value = document.getElementById("addValue").value;
 
             contract.methods.addData(key, value).send({from: web3.eth.defaultAccount})
             .then(function(receipt){
@@ -86,7 +88,7 @@
 
         // Função para recuperar dados
         function getData() {
-            var key = document.getElementById("key").value;
+            var key = document.getElementById("getKey").value;
 
             contract.methods.getData(key).call()
             .then(function(result){
@@ -94,15 +96,76 @@
             });
         }
     </script>
+	<style>
+		body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 50%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#display {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+	</style>
 </head>
 <body>
-    <h2>Data Storage Interface</h2>
-    <label for="key">Key:</label>
-    <input type="text" id="key"><br><br>
-    <label for="value">Value:</label>
-    <input type="text" id="value"><br><br>
-    <button onclick="addData()">Add Data</button>
-    <button onclick="getData()">Get Data</button><br><br>
-    <div id="display"></div>
+    <div class="container">
+        <h2>Interface de Armazenamento de Dados</h2>
+        <h3>Adicionar Dados</h3>
+        <label for="addKey">Chave:</label>
+        <input type="text" id="addKey"><br><br>
+        <label for="addValue">Valor:</label>
+        <input type="text" id="addValue"><br><br>
+        <button onclick="addData()">Adicionar Dados</button><br><br>
+
+        <h3>Acessar Dados</h3>
+        <label for="getKey">Digite a Chave:</label>
+        <input type="text" id="getKey"><br><br>
+        <button onclick="getData()">Obter Dados</button><br><br>
+        <div id="display"></div>
+    </div>
 </body>
 </html>
