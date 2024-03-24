@@ -25,27 +25,26 @@
 
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
     <script>
-        const contratoAddress = '0x0a900c283688EfEc9FeAAB580801a38c2AB945D7';
+        const contratoAddress = '0xE53650C8b991CAaC6bacF3297275ca863859094a';
         const contratoABI = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
 	{
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "address",
-				"name": "remetente",
+				"name": "usuario",
 				"type": "address"
 			},
 			{
 				"indexed": false,
 				"internalType": "string",
 				"name": "dado",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "senha",
 				"type": "string"
 			}
 		],
@@ -71,6 +70,63 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "sacarTaxa",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "dadosPorUsuario",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "dado",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "senha",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalTaxa",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "string",
@@ -92,7 +148,7 @@
 ];
 
         const web3 = new Web3(Web3.givenProvider);
-        const contrato = new web3.eth.Contract(contratoABI, contratoAddress);
+        let contrato;
 
         async function enviarDado() {
             const dado = document.getElementById("dado").value;
@@ -105,8 +161,16 @@
         async function verificarDado() {
             const senha = document.getElementById("senhaVerificar").value;
             const dadoVerificado = await contrato.methods.verificarDado(senha).call();
-            alert("Dado verificado: " + dadoVerificado);
+            if (dadoVerificado === '') {
+                alert("Senha incorreta ou dado não encontrado.");
+            } else {
+                alert("Dado verificado: " + dadoVerificado);
+            }
         }
+
+        window.addEventListener('load', async () => {
+            contrato = new web3.eth.Contract(contratoABI, contratoAddress);
+        });
     </script>
 </body>
 </html>
